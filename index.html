@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Hotel of Tomorrow — AR</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+  html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #0c1412;
+    font-family: "Manrope", Arial, Helvetica, sans-serif;
+  }
+
+  canvas {
+    display: block;
+  }
+
+  /* ---------------------------------------------------------
+     Small top-left brand mark. Non-interactive, stays out of
+     the way of the 3D scene and any headset's own status bar.
+  --------------------------------------------------------- */
+
+  #brand {
+    position: fixed;
+    top: 14px;
+    left: 16px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(245,241,233,.85);
+    font-size: 11px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    pointer-events: none;
+    text-shadow: 0 1px 6px rgba(0,0,0,.6);
+  }
+
+  #brand img {
+    height: 30px;
+    width: auto;
+    max-width: 96px;
+    object-fit: contain;
+    padding: 6px 10px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.45), 0 0 0 1px rgba(0,0,0,.06);
+  }
+
+  /* ---------------------------------------------------------
+     First-run hint for people previewing on a laptop/desktop
+     before a headset is available. Fades out on first input
+     and never appears again once inside an AR session.
+  --------------------------------------------------------- */
+
+  #desktopHint {
+    position: fixed;
+    left: 50%;
+    bottom: 26px;
+    transform: translateX(-50%);
+    z-index: 10;
+    padding: 10px 18px;
+    border-radius: 30px;
+    background: rgba(20,25,25,.55);
+    backdrop-filter: blur(8px);
+    color: #f5f1e9;
+    font-size: 12px;
+    letter-spacing: .04em;
+    transition: opacity .6s ease;
+  }
+
+  #desktopHint.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* ---------------------------------------------------------
+     three.js's ARButton injects its own element with id
+     "ARButton" — restyle it here to match the project's
+     palette instead of the library default.
+  --------------------------------------------------------- */
+
+  #ARButton {
+    background: #16221e !important;
+    color: #f3efe6 !important;
+    border: 1px solid #c9a24a !important;
+    font-size: 13px !important;
+    letter-spacing: .08em !important;
+    text-transform: uppercase;
+    padding: 12px 22px !important;
+    border-radius: 30px !important;
+  }
+
+</style>
+</head>
+
+<body>
+
+  <div id="brand">
+    <img id="brandLogoNp" src="images/np-logo.png" alt="Ngee Ann Polytechnic" onerror="this.style.display='none'">
+    <img id="brandLogoDe" src="images/de-logo.png" alt="Design & Environment" onerror="this.style.display='none'">
+    <span>Hotel of Tomorrow · AR</span>
+  </div>
+
+  <div id="desktopHint">
+    Drag to look around · Click a panel to select · Put on an AR headset and tap Enter&nbsp;AR below
+  </div>
+
+  <!-- Import map so the browser resolves "three" the same way the
+       module script below expects. This loads three.js straight from
+       a CDN at runtime — nothing to install locally. -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <!-- The ?v= query string is a cache-buster: browsers otherwise treat
+       main.js as immutable across reloads, so edits can silently keep
+       serving the old cached copy. Bump this number whenever main.js
+       changes, so a normal reload (not just a hard refresh) always
+       picks up the latest version. -->
+  <script type="module" src="main.js?v=17"></script>
+
+</body>
+</html>
