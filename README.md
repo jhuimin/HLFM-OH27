@@ -10,14 +10,6 @@ An augmented reality showcase built for the **Ngee Ann Polytechnic Open House**,
 
 This experience lets Open House visitors step into student projects through mixed reality. Using a **Microsoft HoloLens 2**, visitors can view and interact with student work placed in the space around them, giving a hands-on look at what HLFM students create across their modules.
 
-## Student Contributors
-
-Featuring the work of HLFM students:
-
-- *Student name* – *project title*
-- *Student name* – *project title*
-- *Student name* – *project title*
-
 
 ## Usage & Copyright
 
