@@ -253,26 +253,35 @@ async function startAR(button) {
 }
 
 async function mountEntryButton() {
+  // Always shown, so it's never a mystery where the button went — on a
+  // device without AR it just says so instead of disappearing.
+  const button = document.createElement("button");
+  button.id = "ARButton";
+  button.textContent = "Checking for AR…";
+  button.disabled = true;
+  document.body.appendChild(button);
+
   if (!window.isSecureContext) {
+    button.textContent = "AR needs an https:// link";
     showARStatus("AR needs a secure https:// link — open the GitHub Pages address instead.");
     return;
   }
   const arSupported =
     navigator.xr && (await navigator.xr.isSessionSupported("immersive-ar").catch(() => false));
   if (!arSupported) {
+    button.textContent = "AR not supported on this device";
     console.info("Immersive AR isn't supported on this browser/device — running in desktop preview mode only.");
     return;
   }
 
-  const button = document.createElement("button");
-  button.id = "ARButton";
   button.textContent = "Start AR";
+  button.disabled = false;
+  button.classList.add("ready");
   button.addEventListener("click", () => {
     const session = renderer.xr.getSession();
     if (session) session.end();
     else startAR(button);
   });
-  document.body.appendChild(button);
 }
 
 mountEntryButton();
