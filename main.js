@@ -11,7 +11,6 @@
    ============================================================= */
 
 import * as THREE from "three";
-import { ARButton } from "three/addons/webxr/ARButton.js";
 
 /* =============================================================
    PALETTE — kept consistent with the original kiosk design
@@ -81,26 +80,7 @@ const hotels = [
     ],
   },
   {
-    id: "03", name: "The Grid", accent: "rgba(160,130,255,.55)",
-    themes: "DESIGN · PERFORMANCE · WELLNESS",
-    description: "A visionary anchor where intelligent design powers peak performance — an urban sanctuary for travellers who refuse to compromise between high-stakes productivity and absolute relaxation. Twelve cascading floors rise around a striking vertical atrium, with four distinct experience zones engineered for both performance and rest.",
-    images: [
-      { src: "images/grid-base.png", label: "The Base Grid", icon: "🛏️",
-        description: "Sleeps two, with a dedicated workspace, minibar, city views, a sofa, and a rain shower — the essentials, done well." },
-      { src: "images/grid-core.png", label: "The Core Grid", icon: "💡",
-        description: "Sleeps two, with a workspace, minibar, timed LED lighting, city views, a rain shower, and high-speed WiFi — a step up in comfort and connectivity." },
-      { src: "images/grid-apex.png", label: "The Apex Grid", icon: "✨",
-        description: "Sleeps two, with a workspace, minibar, timed LED lighting, 24/7 butler service, a 360° city view, a sofa, rain shower, high-speed WiFi, and a jacuzzi tub — the flagship suite for those who don't compromise." },
-    ],
-    features: [
-      ["🏙️", "Vertical Atrium", "Twelve cascading floors wrap a striking vertical atrium — the building's architecture is the view."],
-      ["🧭", "Four Experience Zones", "Dining, fitness, wellness and work each get their own zone under one roof."],
-      ["🍽️", "Tech-Forward Dining", "Restaurants built around fresh, local ingredients and tech-forward service."],
-      ["🧘", "Collaborative Wellness", "Fitness and wellness hubs designed for recovery, not just exercise."],
-    ],
-  },
-  {
-    id: "04", name: "The Elysium", accent: "rgba(220,170,90,.55)",
+    id: "03", name: "The Elysium", accent: "rgba(220,170,90,.55)",
     themes: "LUXURY · IMMERSION · EXPERIENCE",
     description: "Overlooking Orchard Road, The Elysium is a refined luxury hotel where every realm rises in scale and sophistication — from an effortless 45 sqm retreat to a 500 sqm penthouse crowned by a private infinity pool and 360° skyline views.",
     images: [
@@ -131,39 +111,8 @@ const hotels = [
     ],
   },
   {
-    id: "06", name: "Multiverse Hotel", accent: "rgba(130,100,255,.6)",
-    themes: "IMMERSION · WORLDS · TECHNOLOGY",
-    description: "One hotel, infinite worlds — guests step between themed zones, activities and social spaces within a single stay.",
-    images: ["images/multiverse-01.jpg", "images/multiverse-02.jpg", "images/multiverse-03.jpg", "images/multiverse-04.jpg"],
-    features: [
-      ["🌌", "Multiple Worlds", "Guests step between themed zones and experiences without ever leaving the building."],
-      ["🎭", "Immersive Activities", "Themed experiences and social spaces bring guests together."],
-      ["🚪", "Choose Your World", "Every guest charts a different path through the same hotel."],
-    ],
-  },
-  {
-    id: "07", name: "Living Hotel", accent: "rgba(80,210,160,.55)",
-    themes: "AI · PERSONALISATION · WELLNESS",
-    description: "A personalised hotel experience where AI adapts the environment to each guest.",
-    images: ["images/living-01.jpg", "images/living-02.jpg", "images/living-03.jpg"],
-    features: [
-      ["🧠", "Adaptive Room", "A room that quietly adapts itself — lighting, temperature, mood — to the guest inside it."],
-      ["🤖", "Personal AI", "Artificial intelligence personalises every part of the stay, before you even ask."],
-    ],
-  },
-  {
-    id: "08", name: "Fantasy Retreat", accent: "rgba(220,120,220,.6)",
-    themes: "FANTASY · IMMERSION · STORYTELLING",
-    description: "A fantasy-inspired hotel where hospitality becomes storytelling, entertainment and escape.",
-    images: ["images/fantasy-01.jpg", "images/fantasy-02.jpg", "images/fantasy-03.jpg", "images/fantasy-04.jpg"],
-    features: [
-      ["🏰", "Fantasy World", "Guests step into an imagined environment."],
-      ["🎨", "Storytelling", "The hotel becomes part of a narrative."],
-      ["🪄", "Escape", "The hotel provides an escape from everyday reality."],
-    ],
-  },
-  {
-    id: "09", name: "The Hestia", accent: "rgba(120,180,230,.55)",
+    id: "04", name: "The Hestia", accent: "rgba(120,180,230,.55)",
+    aidenHome: true, // AIDEN "lives" here — special greeting + requests on the Features page
     themes: "LUXURY · AI · HOSPITALITY",
     description: "The Hestia is the future of luxury hospitality — sprawling suites paired with signature technology and a personal AI butler, AIDEN, redefining what a hotel stay can be.",
     images: [
@@ -184,6 +133,37 @@ const hotels = [
 ];
 
 /* =============================================================
+   AIDEN — WHAT THE GUIDE SAYS
+   Edit any line freely. Words in {curly brackets} are filled in
+   automatically: {hotel}, {room}, {feature}, {description}.
+   ============================================================= */
+
+const AIDEN_LINES = {
+  welcome: "Welcome to the Hotel of Tomorrow. I'm AIDEN, your guide. Point at a hotel and pinch your fingers to step inside.",
+  selection: "Four hotels, four futures. Which one would you like to visit?",
+  selectionHint: "Hold your hand up, point the ray at a hotel card, then pinch your thumb and finger together to select it.",
+  hub: "Welcome to {hotel}. Explore the rooms, or discover the features that make it different.",
+  hubHome: "Welcome to The Hestia. This is where I live. Visit The Features, and you can ask me for something.",
+  hubHint: "Choose The Rooms to see where you would stay, or The Features to see what's new.",
+  rooms: "These are the rooms at {hotel}. Pick one to step inside.",
+  roomsHint: "Turn your head to see every room, then point at a photo and pinch to open it.",
+  roomDetail: "This is the {room}. {description}",
+  features: "Pick a feature, and watch the room react.",
+  featuresHome: "Pick a feature, or try one of the requests above, and I'll take care of it.",
+  featurePicked: "{feature}. {description}",
+  // Buttons shown on The Hestia's Features page. effect: "dim" | "warm" | "celebrate"
+  homeRequests: [
+    { icon: "🌙", label: "Dim the lights", effect: "dim", reply: "Of course. Lights down, nice and calm." },
+    { icon: "🌅", label: "Golden hour", effect: "warm", reply: "Golden hour, coming right up." },
+    { icon: "✨", label: "Surprise me", effect: "celebrate", reply: "A little celebration, just for you." },
+  ],
+};
+
+function fillLine(line, vars = {}) {
+  return line.replace(/\{(\w+)\}/g, (_, key) => vars[key] ?? "");
+}
+
+/* =============================================================
    RENDERER / SCENE / CAMERA
    ============================================================= */
 
@@ -196,6 +176,19 @@ const userRig = new THREE.Group();
 userRig.add(camera);
 scene.add(userRig);
 
+// Render AR slightly above the headset's default resolution so text and
+// photos stay crisp. Drop this to 1.0 if the HoloLens starts to stutter.
+const XR_RESOLUTION_SCALE = 1.25;
+// Eye height the whole layout is designed around.
+const EYE_HEIGHT = 1.6;
+
+// The headset's floor estimate is often off (and guests vary in height,
+// or sit down), so a moment after AR starts the rig is shifted to put the
+// wearer's real eyes at EYE_HEIGHT — the panels then land at eye level
+// for everyone. Waits a few frames so the camera holds a real head pose.
+const RECENTER_DELAY_FRAMES = 5;
+let recenterFramesLeft = 0;
+
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -204,25 +197,92 @@ renderer.xr.setReferenceSpaceType("local-floor");
 document.body.appendChild(renderer.domElement);
 
 /* -------------------------------------------------------------
-   ENTRY BUTTONS — AR first, VR as a fallback/alternative
+   ENTRY BUTTON
+   Starts AR ourselves instead of via three.js's ARButton. ARButton
+   always asks for "local-floor"; if the headset can't provide it,
+   three.js fails silently and the HoloLens sits on the Edge logo
+   forever. Here we check first and fall back to "local" (origin at
+   the headset), lifting the rig so the floor-based layout still lands
+   at eye level. Any failure is shown on the page instead of hanging.
    ------------------------------------------------------------- */
 
-async function mountEntryButtons() {
-  const arSupported =
-    navigator.xr && (await navigator.xr.isSessionSupported("immersive-ar").catch(() => false));
+const arStatus = document.getElementById("arStatus");
 
-  if (arSupported) {
-    const arBtn = ARButton.createButton(renderer, {
-      optionalFeatures: ["local-floor"],
-    });
-    arBtn.style.bottom = "20px";
-    document.body.appendChild(arBtn);
-  } else {
-    console.info("Immersive AR isn't supported on this browser/device — running in desktop preview mode only.");
-  }
+function showARStatus(message) {
+  if (!arStatus) return;
+  arStatus.textContent = message;
+  arStatus.hidden = !message;
 }
 
-mountEntryButtons();
+async function startAR(button) {
+  showARStatus("");
+  unlockAudio();
+  button.disabled = true;
+
+  let session;
+  try {
+    session = await navigator.xr.requestSession("immersive-ar", { optionalFeatures: ["local-floor"] });
+  } catch (err) {
+    showARStatus("Couldn't start AR: " + (err?.message || err));
+    button.disabled = false;
+    return;
+  }
+
+  try {
+    try {
+      await session.requestReferenceSpace("local-floor");
+      renderer.xr.setReferenceSpaceType("local-floor");
+      userRig.position.y = 0;
+    } catch {
+      renderer.xr.setReferenceSpaceType("local");
+      userRig.position.y = EYE_HEIGHT;
+    }
+    renderer.xr.setFramebufferScaleFactor(XR_RESOLUTION_SCALE);
+    await renderer.xr.setSession(session);
+    recenterFramesLeft = RECENTER_DELAY_FRAMES;
+    button.textContent = "Stop AR";
+    session.addEventListener("end", () => {
+      button.textContent = "Start AR";
+      userRig.position.y = 0;
+    });
+  } catch (err) {
+    session.end().catch(() => {});
+    showARStatus("AR started but the scene couldn't load: " + (err?.message || err));
+  }
+  button.disabled = false;
+}
+
+async function mountEntryButton() {
+  if (!window.isSecureContext) {
+    showARStatus("AR needs a secure https:// link — open the GitHub Pages address instead.");
+    return;
+  }
+  const arSupported =
+    navigator.xr && (await navigator.xr.isSessionSupported("immersive-ar").catch(() => false));
+  if (!arSupported) {
+    console.info("Immersive AR isn't supported on this browser/device — running in desktop preview mode only.");
+    return;
+  }
+
+  const button = document.createElement("button");
+  button.id = "ARButton";
+  button.textContent = "Start AR";
+  button.addEventListener("click", () => {
+    const session = renderer.xr.getSession();
+    if (session) session.end();
+    else startAR(button);
+  });
+  document.body.appendChild(button);
+}
+
+mountEntryButton();
+
+// A script error inside AR leaves the headset frozen with no way to see
+// what happened — drop back to the page and show the message instead.
+window.addEventListener("error", (e) => {
+  showARStatus("Something went wrong: " + e.message);
+  renderer.xr.getSession()?.end().catch(() => {});
+});
 
 window.addEventListener("resize", () => {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -265,6 +325,10 @@ const floor = new THREE.Mesh(
   new THREE.MeshStandardMaterial({ color: 0x171e1c, roughness: 1 })
 );
 floor.rotation.x = -Math.PI / 2;
+// Pure backdrop: draw it first and never let it hide panels in front of it
+// (low panels were getting clipped by the floor in the desktop preview).
+floor.renderOrder = -1;
+floor.material.depthWrite = false;
 scene.add(floor);
 
 renderer.xr.addEventListener("sessionstart", () => {
@@ -401,6 +465,7 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 4) {
 function canvasToPlane(canvas, worldWidth, worldHeight) {
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
   const mat = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
   const geo = new THREE.PlaneGeometry(worldWidth, worldHeight);
   const mesh = new THREE.Mesh(geo, mat);
@@ -615,12 +680,69 @@ function drawTitlePanel(ctx, w, h, eyebrow, title, body) {
 
   if (body) {
     ctx.fillStyle = PALETTE.textMuted;
-    ctx.font = `28px ${FONT_BODY}`;
     const lines = body.split("\n");
-    lines.forEach((line, i) => ctx.fillText(line, w / 2, 210 + i * 38));
+    // Long descriptions shrink to fit instead of running off both edges.
+    let size = 28;
+    ctx.font = `${size}px ${FONT_BODY}`;
+    const widest = Math.max(...lines.map((line) => ctx.measureText(line).width));
+    if (widest > w - 60) {
+      size = Math.max(18, Math.floor((size * (w - 60)) / widest));
+      ctx.font = `${size}px ${FONT_BODY}`;
+    }
+    lines.forEach((line, i) => ctx.fillText(line, w / 2, 210 + i * (size + 10)));
   }
   ctx.textAlign = "left";
 }
+
+/* =============================================================
+   SOUND EFFECTS
+   Tiny synthesized blips via Web Audio — no audio files to upload.
+   Browsers only allow sound after a real click, so unlockAudio() is
+   called from the Start AR button and the first desktop click.
+   ============================================================= */
+
+let audioCtx = null;
+let audioUnlocked = false;
+
+function unlockAudio() {
+  const AudioCtor = window.AudioContext || window.webkitAudioContext;
+  if (!audioCtx && AudioCtor) audioCtx = new AudioCtor();
+  audioCtx?.resume?.();
+  audioUnlocked = true;
+}
+
+function tone(freq, delay, duration, volume) {
+  if (!audioCtx) return;
+  const t0 = audioCtx.currentTime + delay;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = "sine";
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(0, t0);
+  gain.gain.linearRampToValueAtTime(volume, t0 + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
+  osc.connect(gain).connect(audioCtx.destination);
+  osc.start(t0);
+  osc.stop(t0 + duration + 0.02);
+}
+
+let lastHoverSound = 0;
+const sfx = {
+  hover() {
+    const now = performance.now();
+    if (now - lastHoverSound < 120) return; // hand jitter shouldn't machine-gun ticks
+    lastHoverSound = now;
+    tone(1320, 0, 0.06, 0.035);
+  },
+  select() {
+    tone(660, 0, 0.09, 0.08);
+    tone(990, 0.06, 0.12, 0.06);
+  },
+  chime() {
+    tone(784, 0, 0.4, 0.05);
+    tone(1175, 0.12, 0.5, 0.04);
+  },
+};
 
 /* =============================================================
    INTERACTION SYSTEM
@@ -628,9 +750,15 @@ function drawTitlePanel(ctx, w, h, eyebrow, title, body) {
 
 const raycaster = new THREE.Raycaster();
 let interactiveObjects = [];
+let hitTargets = [];
 let hovered = null;
 let dwellStart = 0;
 const DWELL_MS = 1200;
+
+// Every flat button/card gets an invisible, slightly larger "hit pad", so a
+// shaky hand ray that lands just off the edge still counts as a hit.
+const HIT_MARGIN = 0.04;
+const hitPadMaterial = new THREE.MeshBasicMaterial({ visible: false });
 
 /* -------------------------------------------------------------
    IDLE TIMEOUT — a kiosk left untouched should reset itself back
@@ -661,19 +789,56 @@ dwellRing.renderOrder = 999;
 dwellRing.visible = false;
 scene.add(dwellRing);
 
+function hitTargetFor(obj) {
+  if (obj.userData.hitPad) return obj.userData.hitPad;
+  if (obj.geometry?.type !== "PlaneGeometry") return obj;
+  const { width, height } = obj.geometry.parameters;
+  const pad = new THREE.Mesh(
+    new THREE.PlaneGeometry(width + HIT_MARGIN * 2, height + HIT_MARGIN * 2),
+    hitPadMaterial
+  );
+  pad.userData.owner = obj;
+  obj.add(pad);
+  obj.userData.hitPad = pad;
+  return pad;
+}
+
+// AIDEN is always clickable, on every scene.
 function setInteractive(list) {
-  interactiveObjects = list;
+  interactiveObjects = [...list, aiden.group];
+  hitTargets = interactiveObjects.map(hitTargetFor);
+}
+
+// Raycast against the hit pads, but report the real object they belong to.
+function pick() {
+  // Hidden buttons (e.g. Exit AR outside a headset) shouldn't catch the ray.
+  const hit = raycaster
+    .intersectObjects(hitTargets, false)
+    .find((h) => (h.object.userData.owner || h.object).visible);
+  if (!hit) return null;
+  const { object, point, distance } = hit;
+  return { object: object.userData.owner || object, point, distance };
+}
+
+const _rayRotation = new THREE.Matrix4();
+function pickFromController(controller) {
+  _rayRotation.identity().extractRotation(controller.matrixWorld);
+  raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
+  raycaster.ray.direction.set(0, 0, -1).applyMatrix4(_rayRotation);
+  return pick();
 }
 
 function fireSelect(mesh) {
   markActivity();
   if (mesh && typeof mesh.userData.onSelect === "function") {
+    sfx.select();
     mesh.userData.onSelect();
   }
 }
 
-let usingControllers = false;
-
+// On HoloLens each tracked hand shows up as a "controller". A hand that
+// leaves the sensors' view disconnects, and the render loop falls back to
+// look-and-hold (gaze dwell) whenever no hand is currently tracked.
 function setupController(index) {
   const controller = renderer.xr.getController(index);
 
@@ -690,19 +855,23 @@ function setupController(index) {
   controller.add(ray);
 
   controller.addEventListener("connected", () => {
-    usingControllers = true;
-    controller.visible = true;
+    controller.userData.connected = true;
   });
   controller.addEventListener("disconnected", () => {
-    controller.visible = false;
+    controller.userData.connected = false;
   });
 
+  // Pick from where *this* hand points at the moment of the pinch, not
+  // whatever either hand happened to be hovering on the last frame.
   controller.addEventListener("selectstart", () => {
     markActivity();
-    if (hovered) fireSelect(hovered);
+    const hit = pickFromController(controller);
+    if (hit) fireSelect(hit.object);
   });
 
-  scene.add(controller);
+  // Inside the rig, so hands stay lined up with the head when the rig is
+  // lifted for the no-floor-tracking fallback.
+  userRig.add(controller);
   return controller;
 }
 
@@ -727,6 +896,7 @@ window.addEventListener("pointermove", (e) => {
 renderer.domElement.addEventListener("pointerdown", (e) => {
   if (renderer.xr.isPresenting) return;
   markActivity();
+  unlockAudio();
   isDragging = true;
   dragDistance = 0;
   lastX = e.clientX; lastY = e.clientY;
@@ -778,39 +948,221 @@ function clearWorld() {
   }
 }
 
+// The fade is stepped from the main render loop (updateTransition) rather
+// than window.requestAnimationFrame, which can pause while an immersive
+// session is running — a transition that never finishes looks like a
+// click that did nothing.
+const FADE_SECONDS = 0.22;
+let transition = null;
+
 function navigate(buildFn) {
-  const duration = 220;
-  const start = performance.now();
-  function fadeOut(now) {
-    const t = Math.min(1, (now - start) / duration);
-    fadePlane.material.opacity = t;
-    if (t < 1) {
-      requestAnimationFrame(fadeOut);
-    } else {
+  if (transition?.phase === "out") {
+    transition.buildFn = buildFn; // a second click mid-fade just changes the destination
+    return;
+  }
+  transition = { phase: "out", t: 0, buildFn };
+}
+
+function updateTransition(delta) {
+  if (!transition) return;
+  transition.t += Math.min(delta, 0.05) / FADE_SECONDS;
+
+  if (transition.phase === "out") {
+    fadePlane.material.opacity = Math.min(1, transition.t);
+    if (transition.t >= 1) {
       clearWorld();
       setInteractive([]);
-      buildFn();
-      // FIXED: each new scene assumes a forward-facing view — reset
-      // any desktop-preview look-around so nothing appears tilted.
+      transition.buildFn();
+      // Each new scene assumes a forward-facing view — reset any
+      // desktop-preview look-around so nothing appears tilted.
       if (!renderer.xr.isPresenting) {
         yaw = 0;
         pitch = 0;
       }
-      const start2 = performance.now();
-      function fadeIn(now2) {
-        const t2 = Math.min(1, (now2 - start2) / duration);
-        fadePlane.material.opacity = 1 - t2;
-        if (t2 < 1) requestAnimationFrame(fadeIn);
-      }
-      requestAnimationFrame(fadeIn);
+      transition = { phase: "in", t: 0 };
     }
+  } else {
+    fadePlane.material.opacity = Math.max(0, 1 - transition.t);
+    if (transition.t >= 1) transition = null;
   }
-  requestAnimationFrame(fadeOut);
 }
+
+/* =============================================================
+   AIDEN — FLOATING AI BUTLER
+   A glowing orb that floats at the lower-left of your view, following
+   gently as you turn. It speaks each scene's line aloud (the browser's
+   built-in text-to-speech) with a matching speech bubble, and tapping
+   it repeats the line or gives a hint. Lines live in AIDEN_LINES.
+   ============================================================= */
+
+let aidenVoice = null;
+
+function pickAidenVoice() {
+  const english = window.speechSynthesis.getVoices().filter((v) => /^en/i.test(v.lang));
+  aidenVoice =
+    english.find((v) => /natural/i.test(v.name) && /GB/i.test(v.lang)) ||
+    english.find((v) => /natural/i.test(v.name)) ||
+    english.find((v) => /GB/i.test(v.lang)) ||
+    english[0] ||
+    null;
+}
+
+if ("speechSynthesis" in window) {
+  pickAidenVoice();
+  window.speechSynthesis.onvoiceschanged = pickAidenVoice; // voices load async in most browsers
+}
+
+function createAiden() {
+  const group = new THREE.Group();
+  const orb = new THREE.Group();
+  group.add(orb);
+
+  const core = new THREE.Mesh(
+    new THREE.SphereGeometry(0.028, 24, 16),
+    new THREE.MeshBasicMaterial({ color: 0xbff3ff })
+  );
+  const shell = new THREE.Mesh(
+    new THREE.SphereGeometry(0.044, 24, 16),
+    new THREE.MeshBasicMaterial({
+      color: 0x4fc3e8, transparent: true, opacity: 0.28, blending: THREE.AdditiveBlending, depthWrite: false,
+    })
+  );
+  const ring = new THREE.Mesh(
+    new THREE.TorusGeometry(0.055, 0.0025, 8, 48),
+    new THREE.MeshBasicMaterial({ color: 0xc9a24a, transparent: true, opacity: 0.85 })
+  );
+  orb.add(core, shell, ring);
+
+  // Generous invisible sphere so the small orb is easy to tap.
+  const hit = new THREE.Mesh(new THREE.SphereGeometry(0.09, 12, 8), hitPadMaterial);
+  hit.userData.owner = group;
+  group.add(hit);
+  group.userData.hitPad = hit;
+
+  const bubbleCanvas = document.createElement("canvas");
+  bubbleCanvas.width = 1024;
+  bubbleCanvas.height = 340;
+  const bubble = canvasToPlane(bubbleCanvas, 0.6, 0.2);
+  bubble.position.set(0.36, 0, 0); // to the right of the orb
+  bubble.material.opacity = 0;
+  bubble.material.depthWrite = false;
+  bubble.visible = false;
+  group.add(bubble);
+
+  scene.add(group);
+
+  let hint = "";
+  let speaking = false;
+  let bubbleUntil = 0;
+  let placed = false;
+  let currentUtterance = null;
+
+  function drawBubble(text) {
+    refreshPanel(bubble, (ctx) => {
+      const w = 1024, h = 340;
+      ctx.fillStyle = "rgba(12,20,18,.88)";
+      roundRect(ctx, 4, 4, w - 8, h - 8, 28);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(79,195,232,.6)";
+      ctx.lineWidth = 3;
+      roundRect(ctx, 4, 4, w - 8, h - 8, 28);
+      ctx.stroke();
+
+      ctx.fillStyle = PALETTE.brass;
+      ctx.font = `600 26px ${FONT_BODY}`;
+      ctx.fillText("AIDEN", 40, 58);
+
+      ctx.fillStyle = PALETTE.textWarm;
+      ctx.font = `30px ${FONT_BODY}`;
+      wrapText(ctx, text, 40, 112, w - 80, 42, 5);
+    });
+  }
+
+  function speak(text) {
+    if (!audioUnlocked || !("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    if (aidenVoice) utterance.voice = aidenVoice;
+    utterance.lang = aidenVoice?.lang || "en-GB";
+    currentUtterance = utterance;
+    utterance.onstart = () => {
+      if (currentUtterance === utterance) speaking = true;
+    };
+    // cancel() fires end/error on the line being replaced — ignore those.
+    utterance.onend = utterance.onerror = () => {
+      if (currentUtterance !== utterance) return;
+      speaking = false;
+      bubbleUntil = clock.elapsedTime + 2.5;
+    };
+    window.speechSynthesis.speak(utterance);
+  }
+
+  // `nextHint` is what tapping the orb says; defaults to repeating the line.
+  function say(text, nextHint) {
+    hint = nextHint || text;
+    drawBubble(text);
+    sfx.chime();
+    // Fallback timing for when speech is unavailable or blocked.
+    bubbleUntil = clock.elapsedTime + 2.5 + text.split(/\s+/).length * 0.4;
+    speak(text);
+  }
+
+  group.userData.onSelect = () => say(hint, hint);
+
+  const offset = new THREE.Vector3(-0.34, -0.25, -1.3); // lower-left of view, ~1.4 m away
+  const target = new THREE.Vector3();
+  const camPos = new THREE.Vector3();
+  const camQuat = new THREE.Quaternion();
+
+  function update(delta, t) {
+    camera.getWorldPosition(camPos);
+    camera.getWorldQuaternion(camQuat);
+    target.copy(offset).applyQuaternion(camQuat).add(camPos);
+    if (!placed) {
+      group.position.copy(target);
+      placed = true;
+    } else {
+      group.position.lerp(target, 1 - Math.exp(-delta * 2.5)); // lazy follow
+    }
+    group.lookAt(camPos);
+
+    orb.position.y = Math.sin(t * 1.6) * 0.01;
+    ring.rotation.x = t * 0.9;
+    ring.rotation.y = t * 0.6;
+    shell.scale.setScalar(speaking ? 1 + 0.18 * Math.abs(Math.sin(t * 9)) : 1 + 0.05 * Math.sin(t * 2));
+    shell.material.opacity = speaking ? 0.45 : 0.28;
+
+    const bubbleTarget = speaking || t < bubbleUntil ? 1 : 0;
+    bubble.material.opacity += (bubbleTarget - bubble.material.opacity) * Math.min(1, delta * 6);
+    bubble.visible = bubble.material.opacity > 0.02;
+  }
+
+  return {
+    group,
+    say,
+    update,
+    snap: () => (placed = false), // jump straight into view (e.g. on AR start)
+  };
+}
+
+const aiden = createAiden();
+
+renderer.xr.addEventListener("sessionstart", () => {
+  aiden.snap();
+  aiden.say(AIDEN_LINES.welcome, AIDEN_LINES.selectionHint);
+});
 
 /* =============================================================
    SCENE 1 — HOTEL SELECTION
    ============================================================= */
+
+let exitARButton = null;
+renderer.xr.addEventListener("sessionstart", () => {
+  if (exitARButton) exitARButton.visible = true;
+});
+renderer.xr.addEventListener("sessionend", () => {
+  if (exitARButton) exitARButton.visible = false;
+});
 
 function buildHotelSelection() {
   isAtHotelSelection = true;
@@ -820,22 +1172,20 @@ function buildHotelSelection() {
     (() => {
       const c = document.createElement("canvas");
       c.width = 1200; c.height = 260;
-      drawTitlePanel(c.getContext("2d"), c.width, c.height, "THE COLLECTION · 08 FUTURES", "Choose your destination", "Look or point at a hotel, then select to step inside.");
+      drawTitlePanel(c.getContext("2d"), c.width, c.height, "THE COLLECTION · 04 FUTURES", "Choose your destination", "Look or point at a hotel, then select to step inside.");
       return c;
     })(),
-    3.2, 0.7
+    2.4, 0.525
   );
-  title.position.set(0, 2.35, -3.4);
+  title.position.set(0, 2.45, -2.3);
   worldGroup.add(title);
 
-  // Card angular width must stay well under the spacing between cards, or
-  // neighbours overlap — at the old radius/size (3, 1.3 wide) each card was
-  // ~24° wide but only 20° apart, guaranteeing overlap. Wider arc + farther
-  // radius + a slightly smaller card leaves a real gap instead.
-  const radius = 3.6;
-  const arc = (170 * Math.PI) / 180;
-  const count = hotels.length;
-  const startAngle = -arc / 2;
+  // 2×2 grid ~2.2 m away — within HoloLens's comfortable range, and the
+  // whole set fits in view with only a small head turn (the old 170° arc
+  // at 3.6 m needed a full body turn and felt far away).
+  const distance = 2.2;
+  const cardW = 0.9, cardH = 0.55, gap = 0.12;
+  const cols = 2;
 
   const interactive = [];
 
@@ -843,14 +1193,17 @@ function buildHotelSelection() {
     const canvas = document.createElement("canvas");
     canvas.width = 1024;
     canvas.height = 620;
-    const card = canvasToPlane(canvas, 1.2, 0.73);
+    const card = canvasToPlane(canvas, cardW, cardH);
     // The hero photo loads async — redraw this specific card once it's
     // ready instead of leaving it on the gradient+icon fallback forever.
     refreshPanel(card, (ctx) => drawHotelCard(ctx, hotel, () => refreshPanel(card, (c2) => drawHotelCard(c2, hotel))));
 
-    const angle = startAngle + (arc * i) / (count - 1);
-    card.position.set(Math.sin(angle) * radius, 1.55, -Math.cos(angle) * radius);
-    card.lookAt(0, 1.55, 0);
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    const x = (col - (cols - 1) / 2) * (cardW + gap);
+    const y = 1.85 - row * (cardH + gap);
+    card.position.set(x, y, -distance);
+    card.lookAt(0, 1.6, 0);
 
     card.userData.baseY = card.position.y;
     card.userData.phase = i * 0.7;
@@ -862,7 +1215,17 @@ function buildHotelSelection() {
     interactive.push(card);
   });
 
+  // The page's Stop AR button can't be seen inside the headset, so offer
+  // a way out in the scene itself. Only shown while in AR.
+  exitARButton = makeButton("✕  Exit AR", { accent: PALETTE.teal }, 0.6, 0.15);
+  exitARButton.position.set(0, 0.62, -1.6); // below the bottom row of cards
+  exitARButton.visible = renderer.xr.isPresenting;
+  exitARButton.userData.onSelect = () => renderer.xr.getSession()?.end();
+  worldGroup.add(exitARButton);
+  interactive.push(exitARButton);
+
   setInteractive(interactive);
+  aiden.say(AIDEN_LINES.selection, AIDEN_LINES.selectionHint);
 }
 
 /* =============================================================
@@ -899,9 +1262,9 @@ function buildHotelHub(hotel) {
       drawTitlePanel(c.getContext("2d"), c.width, c.height, hotel.themes, hotel.name, hotel.description.slice(0, 110) + (hotel.description.length > 110 ? "…" : ""));
       return c;
     })(),
-    3.2, 0.7
+    2.4, 0.525
   );
-  intro.position.set(0, 2.3, -3.0); // y-range [1.95, 2.65]
+  intro.position.set(0, 2.35, -2.3); // y-range [2.09, 2.61]
   worldGroup.add(intro);
 
   const interactive = [];
@@ -938,31 +1301,35 @@ function buildHotelHub(hotel) {
     ctx.fillText("ENTER →", 350, 480);
     ctx.textAlign = "left";
 
-    return canvasToPlane(canvas, 1.4, 1.04);
+    return canvasToPlane(canvas, 1.1, 0.82);
   }
 
-  // Cards: y-range [0.78, 1.82] — clear of the title above (bottom 1.95)
+  // Cards: y-range [1.04, 1.86] — clear of the title above (bottom 2.09)
   const roomsCard = makeChoiceCard("🛏️", "The Rooms", "Room types you can step inside, from an entry-level smart room to the flagship suite.");
-  roomsCard.position.set(-0.85, 1.3, -2.4);
-  roomsCard.lookAt(0, 1.3, 0);
+  roomsCard.position.set(-0.65, 1.45, -2.0);
+  roomsCard.lookAt(0, 1.45, 0);
   roomsCard.userData.onSelect = () => navigate(() => buildRooms(hotel));
   worldGroup.add(roomsCard);
   interactive.push(roomsCard);
 
   const featuresCard = makeChoiceCard("🧬", "The Features", "The ideas and technology that make this hotel different.");
-  featuresCard.position.set(0.85, 1.3, -2.4);
-  featuresCard.lookAt(0, 1.3, 0);
+  featuresCard.position.set(0.65, 1.45, -2.0);
+  featuresCard.lookAt(0, 1.45, 0);
   featuresCard.userData.onSelect = () => navigate(() => buildFeatures(hotel));
   worldGroup.add(featuresCard);
   interactive.push(featuresCard);
 
   const exitBtn = makeButton("← Return to the Collection", { accent: PALETTE.teal }, 0.9, 0.17);
-  exitBtn.position.set(0, 0.55, -1.6); // y-range [0.465, 0.635] — clear of the cards above
+  exitBtn.position.set(0, 0.75, -1.6); // y-range [0.665, 0.835] — clear of the cards above
   exitBtn.userData.onSelect = () => navigate(buildHotelSelection);
   worldGroup.add(exitBtn);
   interactive.push(exitBtn);
 
   setInteractive(interactive);
+  aiden.say(
+    hotel.aidenHome ? AIDEN_LINES.hubHome : fillLine(AIDEN_LINES.hub, { hotel: hotel.name }),
+    AIDEN_LINES.hubHint
+  );
 }
 
 /* =============================================================
@@ -983,18 +1350,20 @@ function buildRooms(hotel) {
       drawTitlePanel(c.getContext("2d"), c.width, c.height, hotel.themes, "The Rooms", "Touch a room to step inside and see more.");
       return c;
     })(),
-    3.2, 0.7
+    2.4, 0.525
   );
-  intro.position.set(0, 2.35, -3.2);
+  intro.position.set(0, 2.35, -2.3);
   worldGroup.add(intro);
 
   const interactive = [];
 
-  // Radius/size chosen so adjacent images leave a real angular gap between
-  // them rather than nearly touching.
+  // Fixed ~32° step between photos (each ~26° wide at this radius), so
+  // neighbours never touch and a 3-room hotel stays compact up front
+  // instead of being spread across the same arc as a 7-room one.
   const imgCount = hotel.images.length;
-  const imgRadius = 3.0;
-  const imgArc = Math.PI * 1.5;
+  const imgRadius = 2.2;
+  const imgStep = 0.56;
+  const imgArc = imgStep * Math.max(0, imgCount - 1);
   hotel.images.forEach((img, i) => {
     const src = typeof img === "string" ? img : img.src;
     const label = typeof img === "string" ? null : img.label;
@@ -1005,7 +1374,7 @@ function buildRooms(hotel) {
     const planeY = 1.5;
     const imgPos = new THREE.Vector3(Math.sin(angle) * imgRadius, planeY, -Math.cos(angle) * imgRadius);
     const plane = new THREE.Mesh(
-      new THREE.PlaneGeometry(1.3, 0.82),
+      new THREE.PlaneGeometry(1.0, 0.63),
       new THREE.MeshBasicMaterial({ color: 0xd7dcda })
     );
     plane.position.copy(imgPos);
@@ -1017,6 +1386,7 @@ function buildRooms(hotel) {
       src,
       (tex) => {
         tex.colorSpace = THREE.SRGBColorSpace;
+        tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
         cropTextureBorder(tex);
         plane.material.map = tex;
         plane.material.color.set(0xffffff);
@@ -1045,9 +1415,9 @@ function buildRooms(hotel) {
           ctx.textAlign = "left";
           return c;
         })(),
-        0.8, 0.15
+        0.7, 0.13
       );
-      const captionY = planeY - 0.55; // clear of the image plane above
+      const captionY = planeY - 0.42; // clear of the image plane above
       caption.position.set(imgPos.x, captionY, imgPos.z);
       caption.lookAt(0, captionY, 0);
       worldGroup.add(caption);
@@ -1062,12 +1432,13 @@ function buildRooms(hotel) {
   });
 
   const backBtn = makeButton("← Back", { accent: PALETTE.teal }, 0.45, 0.17);
-  backBtn.position.set(0, 0.55, -1.6);
+  backBtn.position.set(0, 0.75, -1.5);
   backBtn.userData.onSelect = () => navigate(() => buildHotelHub(hotel));
   worldGroup.add(backBtn);
   interactive.push(backBtn);
 
   setInteractive(interactive);
+  aiden.say(fillLine(AIDEN_LINES.rooms, { hotel: hotel.name }), AIDEN_LINES.roomsHint);
 }
 
 /* =============================================================
@@ -1128,6 +1499,7 @@ function buildRoomDetail(hotel, room) {
     room.src,
     (tex) => {
       tex.colorSpace = THREE.SRGBColorSpace;
+      tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
       cropTextureBorder(tex);
       photo.material.map = tex;
       photo.material.color.set(0xffffff);
@@ -1188,6 +1560,7 @@ function buildRoomDetail(hotel, room) {
   worldGroup.add(backBtn);
 
   setInteractive([backBtn]);
+  aiden.say(fillLine(AIDEN_LINES.roomDetail, { room: room.label, description: room.description }));
 }
 
 /* =============================================================
@@ -1206,9 +1579,9 @@ function buildFeatures(hotel) {
       drawTitlePanel(c.getContext("2d"), c.width, c.height, hotel.themes, "The Features", "Touch a marker to see what makes it different.");
       return c;
     })(),
-    3.2, 0.7
+    2.4, 0.525
   );
-  intro.position.set(0, 2.35, -3.2); // y-range [2.0, 2.7]
+  intro.position.set(0, 2.35, -2.3); // y-range [2.09, 2.61]
   worldGroup.add(intro);
 
   const interactive = [];
@@ -1265,28 +1638,17 @@ function buildFeatures(hotel) {
     transientEffects.push(points);
   }
 
-  // Multiverse Hotel only: stepping into a feature briefly tints the whole
-  // room, echoing its "one hotel, infinite worlds" premise.
-  let worldTintMesh = null;
-  let worldTintLerp = 0;
-  if (hotel.id === "06") {
-    worldTintMesh = new THREE.Mesh(
-      new THREE.SphereGeometry(6, 16, 16),
-      new THREE.MeshBasicMaterial({ color: accentColor, transparent: true, opacity: 0, side: THREE.BackSide, depthWrite: false })
-    );
-    worldGroup.add(worldTintMesh);
-  }
-
   let glowLerp = 0;
+  let dimLerp = 0; // "Dim the lights" request — fades panels down, then slowly back
   let activeGlowColor = baseGlowColor.clone();
   let activeBtn = null;
   const featureBtns = [];
+  const dimmables = [intro];
 
   function reactToTouch(position, color) {
     glowLerp = 1;
     activeGlowColor = color.clone();
     spawnBurst(position.clone(), color);
-    if (worldTintMesh) worldTintLerp = 1;
   }
 
   worldGroup.userData.onFrame = (delta) => {
@@ -1303,12 +1665,11 @@ function buildFeatures(hotel) {
     roomLight.color.copy(settled);
     roomLight.intensity = 1.0 + glowLerp * 1.6;
     emberMat.color.copy(settled);
-    emberMat.opacity = 0.3 + glowLerp * 0.35;
 
-    if (worldTintMesh) {
-      worldTintLerp = Math.max(0, worldTintLerp - delta * 0.8);
-      worldTintMesh.material.opacity = worldTintLerp * 0.22;
-    }
+    dimLerp = Math.max(0, dimLerp - delta * 0.12);
+    emberMat.opacity = (0.3 + glowLerp * 0.35) * (1 - 0.7 * dimLerp);
+    const brightness = 1 - 0.6 * dimLerp;
+    dimmables.forEach((m) => m.material.color.setScalar(brightness));
 
     for (let i = transientEffects.length - 1; i >= 0; i--) {
       const fx = transientEffects[i];
@@ -1338,6 +1699,7 @@ function buildFeatures(hotel) {
   const detailPanel = canvasToPlane(detailCanvas, 2.3, 0.88);
   detailPanel.position.set(0, 1.25, -1.9); // y-range [0.81, 1.69]
   worldGroup.add(detailPanel);
+  dimmables.push(detailPanel);
 
   function showFeature(feature) {
     refreshPanel(detailPanel, (ctx) => {
@@ -1448,18 +1810,59 @@ function buildFeatures(hotel) {
     worldGroup.add(btn);
     featureBtns.push(btn);
     interactive.push(btn);
+    dimmables.push(btn);
 
-    btn.userData.onSelect = () => {
+    btn.userData.selectFeature = (announce) => {
       showFeature(feature);
       activeBtn = btn;
       featureBtns.forEach((m) =>
         refreshPanel(m, (ctx) => drawButton(ctx, 900, 270, m.userData.label, { ...m.userData.opts, selected: m === activeBtn }))
       );
       reactToTouch(btnPos, accentColor);
+      if (announce) aiden.say(fillLine(AIDEN_LINES.featurePicked, { feature: feature[1], description: feature[2] }));
     };
+    btn.userData.onSelect = () => btn.userData.selectFeature(true);
   });
 
-  featureBtns[0]?.userData.onSelect();
+  // Pre-select the first feature quietly, so AIDEN's intro line isn't talked over.
+  featureBtns[0]?.userData.selectFeature(false);
+
+  // AIDEN's home (The Hestia): a row of requests above the panel — guests
+  // ask AIDEN for something and the room responds.
+  if (hotel.aidenHome) {
+    AIDEN_LINES.homeRequests.forEach((request, i) => {
+      const reqBtn = makeButton(request.label, { icon: request.icon, accent: PALETTE.brass }, 0.52, 0.15);
+      reqBtn.position.set((i - (AIDEN_LINES.homeRequests.length - 1) / 2) * 0.6, 1.88, -1.85);
+      reqBtn.userData.onSelect = () => runHomeRequest(request, reqBtn.position);
+      worldGroup.add(reqBtn);
+      interactive.push(reqBtn);
+      dimmables.push(reqBtn);
+    });
+  }
+
+  function runHomeRequest(request, position) {
+    if (request.effect === "dim") {
+      dimLerp = 1;
+      glowLerp = 1;
+      activeGlowColor = new THREE.Color(0x3a5cff);
+    } else if (request.effect === "warm") {
+      dimLerp = 0;
+      baseGlowColor.set(0xffa040); // embers stay golden for the rest of this visit
+      reactToTouch(position, new THREE.Color(0xffa040));
+    } else if (request.effect === "celebrate") {
+      dimLerp = 0;
+      glowLerp = 1;
+      activeGlowColor = new THREE.Color(0xff66cc);
+      for (let i = 0; i < 8; i++) {
+        const a = (i / 8) * Math.PI * 2;
+        spawnBurst(
+          new THREE.Vector3(Math.sin(a) * 1.3, 1.3 + Math.random() * 0.8, -Math.cos(a) * 1.3),
+          new THREE.Color().setHSL(i / 8, 0.8, 0.6)
+        );
+      }
+    }
+    aiden.say(request.reply);
+  }
 
   const backBtn = makeButton("← Back", { accent: PALETTE.teal }, 0.45, 0.17);
   backBtn.position.set(0, 0.5, -1.4);
@@ -1468,6 +1871,7 @@ function buildFeatures(hotel) {
   interactive.push(backBtn);
 
   setInteractive(interactive);
+  aiden.say(hotel.aidenHome ? AIDEN_LINES.featuresHome : AIDEN_LINES.features);
 }
 
 // Canvas text doesn't repaint itself when a webfont finishes loading, so the
@@ -1482,12 +1886,12 @@ const fontsReady = document.fonts
   : Promise.resolve();
 
 fontsReady.then(() => buildHotelSelection());
-
 /* =============================================================
    RENDER LOOP
    ============================================================= */
 
 const clock = new THREE.Clock();
+const _eyePosition = new THREE.Vector3();
 
 renderer.setAnimationLoop(() => {
   const delta = clock.getDelta();
@@ -1509,41 +1913,43 @@ renderer.setAnimationLoop(() => {
 
   worldGroup.userData.onFrame?.(delta, clock.elapsedTime);
   starGroup.rotation.y += delta * 0.004;
+  updateTransition(delta);
 
   if (!renderer.xr.isPresenting) {
     camera.rotation.set(pitch, yaw, 0, "YXZ");
+  } else if (recenterFramesLeft > 0 && --recenterFramesLeft === 0) {
+    userRig.position.y += EYE_HEIGHT - camera.getWorldPosition(_eyePosition).y;
+    aiden.snap();
   }
-  // ---- Raycast: controllers > gaze (headset, no controllers) > desktop mouse ----
+  aiden.update(delta, clock.elapsedTime);
+
+  // ---- Raycast: tracked hands/controllers > gaze (no hand in view) > desktop mouse ----
   let pickedRay = null;
   let mode = "desktop";
+  const trackedControllers = renderer.xr.isPresenting
+    ? [controller0, controller1].filter((c) => c.userData.connected && c.visible)
+    : [];
 
-  if (renderer.xr.isPresenting && usingControllers) {
+  if (trackedControllers.length) {
     mode = "controller";
-    [controller0, controller1].forEach((controller) => {
-      if (!controller.visible) return;
-      const tempMatrix = new THREE.Matrix4().identity().extractRotation(controller.matrixWorld);
-      const origin = new THREE.Vector3().setFromMatrixPosition(controller.matrixWorld);
-      const dir = new THREE.Vector3(0, 0, -1).applyMatrix4(tempMatrix);
-      raycaster.set(origin, dir);
-      const hits = raycaster.intersectObjects(interactiveObjects, false);
-      if (hits.length) pickedRay = hits[0];
+    trackedControllers.forEach((controller) => {
+      const hit = pickFromController(controller);
+      if (hit && !pickedRay) pickedRay = hit;
+      // Ray geometry is 5 m long — scale it to stop at whatever it hits.
       const ray = controller.getObjectByName("ray");
-      if (ray) ray.scale.z = hits.length ? hits[0].distance : 2;
+      if (ray) ray.scale.z = (hit ? hit.distance : 2) / 5;
     });
   } else if (renderer.xr.isPresenting) {
-    // Gaze-only headset (no controllers detected) — pick from the
-    // center of the view, since that's what "looking at" means here.
+    // No hand currently tracked — pick from the center of the view,
+    // since that's what "looking at" means here.
     mode = "gaze";
     raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
-    const hits = raycaster.intersectObjects(interactiveObjects, false);
-    if (hits.length) pickedRay = hits[0];
+    pickedRay = pick();
   } else {
     // Desktop preview — pick from the actual mouse position, so
     // clicking works wherever a button visually is on screen.
-    mode = "desktop";
     raycaster.setFromCamera(mouseNDC, camera);
-    const hits = raycaster.intersectObjects(interactiveObjects, false);
-    if (hits.length) pickedRay = hits[0];
+    pickedRay = pick();
   }
 
   const newHover = pickedRay ? pickedRay.object : null;
@@ -1551,23 +1957,28 @@ renderer.setAnimationLoop(() => {
   if (newHover !== hovered) {
     hovered = newHover;
     dwellStart = clock.elapsedTime;
+    if (hovered) sfx.hover();
   }
 
   if (hovered) {
+    const eye = camera.getWorldPosition(_eyePosition);
+    // Grow the cursor with distance so it stays visible on far panels.
+    const cursorScale = Math.max(1, pickedRay.point.distanceTo(eye) * 0.9);
     reticle.visible = true;
     reticle.position.copy(pickedRay.point);
-    reticle.lookAt(camera.position);
+    reticle.lookAt(eye);
+    reticle.scale.setScalar(cursorScale);
 
-    // Dwell-to-select only applies to gaze-only headsets — controllers
-    // use their trigger (selectstart listener), desktop uses a real
-    // click (listener above), neither should need a forced wait.
+    // Dwell-to-select only applies when no hand is tracked — hands
+    // use a pinch (selectstart listener), desktop uses a real click
+    // (listener above), neither should need a forced wait.
     if (mode === "gaze") {
       const elapsed = (clock.elapsedTime - dwellStart) * 1000;
       const progress = Math.min(1, elapsed / DWELL_MS);
       dwellRing.visible = true;
       dwellRing.position.copy(pickedRay.point);
-      dwellRing.lookAt(camera.position);
-      dwellRing.scale.setScalar(0.3 + progress * 0.7);
+      dwellRing.lookAt(eye);
+      dwellRing.scale.setScalar((0.3 + progress * 0.7) * cursorScale);
       dwellRing.material.opacity = 0.95;
       if (progress >= 1) {
         fireSelect(hovered);
